@@ -5,6 +5,20 @@ namespace ts.CallHierarchy {
         | FunctionExpression & { name: Identifier }
         ;
 
+    function resolveIdentifier(program: Program, identifier: Node) {
+        const typeChecker = program.getTypeChecker();
+        let symbol = typeChecker.getSymbolAtLocation(identifier);
+        if (symbol) {
+            if (symbol.flags & SymbolFlags.Alias) {
+                symbol = typeChecker.getAliasedSymbol(symbol);
+            }
+            if (symbol.valueDeclaration) {
+                return symbol.valueDeclaration;
+            }
+        }
+        return undefined;
+    }
+
     /** Indictates whether a node is named function or class expression. */
     function isNamedExpression(node: Node): node is NamedExpression {
         return (isFunctionExpression(node) || isClassExpression(node)) && isNamedDeclaration(node);
@@ -380,6 +394,14 @@ namespace ts.CallHierarchy {
 
         function collect(node: Node | undefined) {
             if (!node) return;
+
+            if (node.kind === SyntaxKind.Identifier) {
+                const resolvedNode = resolveIdentifier(program, node);
+                if (resolvedNode && resolvedNode.kind === SyntaxKind.ExportAssignment) {
+                    node = (resolvedNode as ExportAssignment).expression;
+                }
+            }
+
             if (node.flags & NodeFlags.Ambient) {
                 // do not descend into ambient nodes.
                 return;
@@ -399,6 +421,18 @@ namespace ts.CallHierarchy {
 
             switch (node.kind) {
                 case SyntaxKind.Identifier:
+                    const resolvedIdentifier = resolveIdentifier(program, node);
+                    // @ts-ignore
+                    if (resolvedIdentifier && (node?.parent?.arguments || []).includes(node)) {
+                        // @ts-ignore
+                        const argumentDefinition = resolvedIdentifier.initializer || resolvedIdentifier;
+                        const isCallableArgument = !!isValidCallHierarchyDeclaration(program.getTypeChecker(), argumentDefinition);
+                        if (isCallableArgument) {
+                            const range = createTextRangeFromNode(node, node.getSourceFile());
+                            callSites.push({ declaration: node as CallHierarchyDeclaration, range });
+                        }
+                    }
+                    return;
                 case SyntaxKind.ImportEqualsDeclaration:
                 case SyntaxKind.ImportDeclaration:
                 case SyntaxKind.ExportDeclaration:
