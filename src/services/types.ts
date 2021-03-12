@@ -1,4 +1,6 @@
 namespace ts {
+    import CallHierarchyDeclaration = ts.CallHierarchy.CallHierarchyDeclaration;
+
     export interface Node {
         getSourceFile(): SourceFile;
         getChildCount(sourceFile?: SourceFile): number;
@@ -669,6 +671,7 @@ namespace ts {
         nameSpan: TextSpan | undefined;
         /** Present if non-empty */
         childItems?: NavigationTree[];
+        node?: Node,
     }
 
     export interface CallHierarchyItem {
@@ -679,6 +682,7 @@ namespace ts {
         span: TextSpan;
         selectionSpan: TextSpan;
         containerName?: string;
+        node?: CallHierarchyDeclaration,
     }
 
     export interface CallHierarchyIncomingCall {
