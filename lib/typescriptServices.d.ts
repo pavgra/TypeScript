@@ -5883,6 +5883,7 @@ declare namespace ts {
         isWriteAccess: boolean;
         isDefinition: boolean;
         isInString?: true;
+        node?: Node;
     }
     interface ImplementationLocation extends DocumentSpan {
         kind: ScriptElementKind;
