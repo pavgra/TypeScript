@@ -856,6 +856,7 @@ namespace ts {
         isWriteAccess: boolean;
         isDefinition: boolean;
         isInString?: true;
+        node?: Node;
     }
 
     export interface ImplementationLocation extends DocumentSpan {

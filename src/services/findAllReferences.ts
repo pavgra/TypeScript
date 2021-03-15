@@ -398,6 +398,7 @@ namespace ts.FindAllReferences {
             isWriteAccess: isWriteAccessForReference(node),
             isDefinition: isDefinitionForReference(node),
             isInString: kind === EntryKind.StringLiteral ? true : undefined,
+            node,
         };
     }
 
