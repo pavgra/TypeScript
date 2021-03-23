@@ -824,7 +824,10 @@ namespace ts.NavigationBar {
             spans: getSpans(n),
             nameSpan: n.name && getNodeSpan(n.name),
             childItems: map(n.children, convertToTree),
+            // additionally exposed
             node: n.node,
+            parentNode: n.parent ? n.parent.node: undefined,
+            additionalNodes: n.additionalNodes,
         };
     }
 

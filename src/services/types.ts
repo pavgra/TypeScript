@@ -671,7 +671,10 @@ namespace ts {
         nameSpan: TextSpan | undefined;
         /** Present if non-empty */
         childItems?: NavigationTree[];
+        // additionally exposed
         node?: Node,
+        parentNode?: Node,
+        additionalNodes?: Node[],
     }
 
     export interface CallHierarchyItem {
