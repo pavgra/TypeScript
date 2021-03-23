@@ -5730,6 +5730,8 @@ declare namespace ts {
         /** Present if non-empty */
         childItems?: NavigationTree[];
         node?: Node;
+        parentNode?: Node;
+        additionalNodes?: Node[];
     }
     interface CallHierarchyItem {
         name: string;
